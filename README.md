@@ -1,20 +1,18 @@
 # Study Kit
 
-A study app that runs in your browser and turns Markdown files into practice
+A browser based study app that turns Markdown files into practice
 tests and spaced-repetition flash cards. It was built for AWS certification
 prep, but a deck can cover any subject: write questions or cards in plain
 Markdown, for example in your notes app, and study them here.
 
+![Screenshot of Study Kit](preview.png)
+
 ## Features
 
-- **Quizzes**: multiple-choice and "select all that apply" questions, one at
+- **Quizzes**: multiple-choice questions, one at
   a time, with immediate feedback, an explanation, and reference links. Each
   run ends with a score and a review of what you missed.
-- **Picks up where you left off**: leave a quiz partway through and it
-  resumes there next time. Each deck shows how many questions you've
-  mastered.
-- **Practice what you missed**: rerun only the questions whose most recent
-  answer was wrong.
+- **Practice what you missed**: rerun only the questions whose most recent answer was wrong.
 - **Missed-question log**: every question you've ever missed, across all
   decks, with the answers you gave. Filter it by deck and export it as
   Markdown or JSON, for example to ask an AI assistant for more practice
@@ -61,22 +59,25 @@ deck files show up when you reload the page.
 
 ## Writing decks
 
-A deck is a Markdown file with a small YAML header. Each `###` heading starts
-a question.
+A deck is a Markdown file with a small YAML header. Each `###` heading starts a question.
 
 ```markdown
 ---
-title: AWS Fundamentals
-cert: AWS Certified Cloud Practitioner
+title: Bedrock Data Ingestion and OpenSearch
+cert: AWS Certified GenAI Professional
+tags: [bedrock, opensearch, rag, knowledge-base]
 ---
 
-### Which AWS service provides object storage?
+### A logistics company runs a live chat support app. Every time a chat session ends, the app generates a transcript in memory as a plain-text string — the transcripts are never written to any file or S3 bucket. The company wants each transcript to become queryable in its Bedrock knowledge base within a couple of minutes of the chat ending, without writing the transcript to S3 first and without triggering a full data-source sync for every single transcript.
 
-- [x] Amazon S3
-- [ ] Amazon EBS
-- [ ] Amazon EFS
+Which solution will meet these requirements?
 
-> S3 stores objects in buckets. EBS is block storage and EFS is a shared file system.
+- [ ] Create an Amazon S3 data source for the knowledge base. Call the `IngestKnowledgeBaseDocuments` API, passing the transcript text directly as inline document content in the request.
+- [x] Create a Custom data source for the knowledge base. Call the `IngestKnowledgeBaseDocuments` API, passing the transcript text directly as inline document content in the request.
+- [ ] Create an Amazon S3 data source for the knowledge base. Write each transcript to the configured S3 bucket, then run a full sync (`StartIngestionJob`) on the data source every time a new transcript arrives.
+- [ ] Create a Custom data source for the knowledge base. Write each transcript to an S3 bucket, then call `IngestKnowledgeBaseDocuments`, specifying the transcript's S3 location as the document content.
+
+> A Custom data source supports both an inline document definition and an S3 location. Calling `IngestKnowledgeBaseDocuments` with the transcript text supplied inline lets the company add the document directly into the knowledge base and vector store within minutes, without ever writing the transcript to S3 and without running a full `StartIngestionJob` sync of the entire data source. An S3 data source, by contrast, only supports specifying a document by its S3 location — inline content is not a supported option for that data source type.
 ```
 
 Checked items (`[x]`) are the correct answers; check more than one for a
@@ -92,9 +93,11 @@ title: RAG Basics
 kind: flashcards
 ---
 
-### What does RAG stand for?
+### Which vector index answers this requirement?
 
-**Retrieval-augmented generation**: relevant documents are retrieved at query time and added to the prompt.
+> Similarity search combined with relational joins, filters, and transactions on the same data, in one query.
+
+**Aurora PostgreSQL with pgvector**, which adds a vector column type and similarity operators to SQL.
 ```
 
 See [docs/deck-format.md](docs/deck-format.md) for the full format, including
@@ -126,27 +129,5 @@ every card in the deck without changing its schedule, for last-minute review.
 
 ## Where your progress is stored
 
-Quiz history, the missed-question log, and flash card schedules are saved in
-your browser's local storage. That means:
-
-- Progress belongs to one browser on one device. It doesn't sync, and it
-  isn't backed up.
-- Clearing this site's data in your browser erases it.
-- **Reset** on a deck clears that deck's quiz history or card schedule. The
-  missed-question log is never reset.
-
-## Development
-
-| Command | What it does |
-|---|---|
-| `npm run dev` | Start the dev server |
-| `npm test` | Run the tests (Vitest) |
-| `npm run build` | Type-check and build a static site into `dist/` |
-| `npm run preview` | Serve the built site locally |
-
-Decks are bundled into the build, so a deployed build contains your deck
-files. Keep that in mind before publishing one. The tests run against your
-`content/` decks, or the examples if you have none.
-
-Built with React, TypeScript, and Vite. Decks are parsed with
-[remark](https://github.com/remarkjs/remark).
+Quiz history, missed-question log, and flash card schedules are saved in
+your browser's local storage.
