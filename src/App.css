@@ -1,0 +1,131 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+.app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+button {
+  font: inherit;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  background: color-mix(in srgb, currentColor 6%, transparent);
+  cursor: pointer;
+}
+
+.link-button {
+  border: none;
+  background: none;
+  padding: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.deck-picker ul {
+  list-style: none;
+  padding: 0;
+}
+
+.deck-picker li {
+  margin-bottom: 0.5rem;
+}
+
+.deck-picker button {
+  width: 100%;
+  text-align: left;
+}
+
+.deck-meta {
+  opacity: 0.6;
+}
+
+.deck-progress {
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.reset-progress {
+  display: block;
+  width: auto;
+  margin-left: auto;
+  margin-top: 0.15rem;
+  padding: 0.15rem 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  opacity: 0.7;
+}
+
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.prompt {
+  white-space: pre-wrap;
+  font-size: 1.1rem;
+}
+
+.hint {
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.options {
+  list-style: none;
+  padding: 0;
+}
+
+.options li {
+  padding: 0.5rem;
+  border-radius: 6px;
+}
+
+.options li.correct {
+  background: color-mix(in srgb, green 20%, transparent);
+}
+
+.options li.incorrect {
+  background: color-mix(in srgb, crimson 20%, transparent);
+}
+
+.feedback {
+  margin-top: 1.5rem;
+}
+
+.feedback .correct {
+  color: green;
+  font-weight: bold;
+}
+
+.feedback .incorrect {
+  color: crimson;
+  font-weight: bold;
+}
+
+.explanation {
+  white-space: pre-wrap;
+}
+
+.references {
+  padding-left: 1.25rem;
+}
+
+.review-detail {
+  margin: 0.5rem 0 1rem 1rem;
+}
+
+.summary-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}

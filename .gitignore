@@ -1,0 +1,11 @@
+node_modules
+dist
+dist-ssr
+*.local
+*.tsbuildinfo
+
+# Symlink to a machine-specific absolute path (see README for setup).
+/content
+
+.idea
+.DS_Store
