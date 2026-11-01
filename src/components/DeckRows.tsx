@@ -1,8 +1,8 @@
 import { useReducer } from 'react'
 import type { CardDeck, Deck } from '../types'
 import { clearCardStates, getCardDeckStats, getCardStates } from '../state/cardSchedule'
-import { clearHistory, getDeckStats } from '../state/history'
-import { clearSession, loadSession } from '../state/session'
+import { getDeckStats, resetQuizProgress } from '../state/history'
+import { loadSession } from '../state/session'
 import type { StudyMode } from '../state/useCardSession'
 import type { QuizMode } from '../state/useQuizSession'
 import { formatInterval } from './formatInterval'
@@ -67,8 +67,7 @@ export function QuizDeckRow({ deck, onStudy }: QuizDeckRowProps) {
             <ResetButton
               confirmText={`Reset all saved progress for "${deck.title}"?`}
               onConfirm={() => {
-                clearHistory(deck.slug)
-                clearSession(deck.slug)
+                resetQuizProgress(deck.slug)
                 refresh()
               }}
             />

@@ -37,3 +37,25 @@ export function hasKey(key: string): boolean {
     return false
   }
 }
+
+/**
+ * Every key the app stores. The `quizme:` prefix predates the rename to Study Kit and
+ * stays so existing progress keeps loading.
+ */
+export function storageKey(name: string): string {
+  return `quizme:${name}`
+}
+
+/**
+ * Get/set/clear for one JSON value per deck, stored under `<namespace>:<deckSlug>`.
+ * `empty` builds the value for a deck with nothing saved, fresh on each read so
+ * callers can't mutate a shared default.
+ */
+export function deckStore<T>(namespace: string, empty: () => T) {
+  const key = (deckSlug: string) => storageKey(`${namespace}:${deckSlug}`)
+  return {
+    get: (deckSlug: string): T => readJson(key(deckSlug), empty()),
+    set: (deckSlug: string, value: T): void => writeJson(key(deckSlug), value),
+    clear: (deckSlug: string): void => removeKey(key(deckSlug)),
+  }
+}

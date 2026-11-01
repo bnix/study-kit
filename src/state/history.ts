@@ -1,13 +1,9 @@
 import type { AttemptRecord, Deck, DeckHistory, Question } from '../types'
-import { readJson, removeKey, writeJson } from './storage'
+import { clearSession } from './session'
+import { deckStore } from './storage'
 
-function storageKey(deckSlug: string): string {
-  return `quizme:history:${deckSlug}`
-}
-
-export function getHistory(deckSlug: string): DeckHistory {
-  return readJson<DeckHistory>(storageKey(deckSlug), {})
-}
+const { get: getHistory, set: saveHistory, clear: clearHistory } = deckStore<DeckHistory>('history', () => ({}))
+export { getHistory, clearHistory }
 
 export function recordAttempt(deckSlug: string, questionId: string, wasCorrect: boolean): DeckHistory {
   const history = getHistory(deckSlug)
@@ -21,12 +17,14 @@ export function recordAttempt(deckSlug: string, questionId: string, wasCorrect: 
   }
 
   const nextHistory: DeckHistory = { ...history, [questionId]: updated }
-  writeJson(storageKey(deckSlug), nextHistory)
+  saveHistory(deckSlug, nextHistory)
   return nextHistory
 }
 
-export function clearHistory(deckSlug: string): void {
-  removeKey(storageKey(deckSlug))
+/** A quiz deck's "Reset": its attempt history and any in-progress session. The miss log is kept. */
+export function resetQuizProgress(deckSlug: string): void {
+  clearHistory(deckSlug)
+  clearSession(deckSlug)
 }
 
 export interface DeckStats {

@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { clearHistory, getDeckStats, getHistory, recordAttempt } from './history'
+import { clearHistory, getDeckStats, getHistory, recordAttempt, resetQuizProgress } from './history'
+import { loadSession, saveSession } from './session'
 
 describe('history', () => {
   beforeEach(() => {
@@ -48,6 +49,17 @@ describe('history', () => {
     clearHistory('deck-a')
 
     expect(getHistory('deck-a')).toEqual({})
+  })
+
+  it('resets a deck\'s history and in-progress session, leaving other decks alone', () => {
+    recordAttempt('deck-a', 'q1', true)
+    recordAttempt('deck-b', 'q1', true)
+    saveSession('deck-a', { questionIndex: 1, selected: [], answered: false, results: [] })
+    resetQuizProgress('deck-a')
+
+    expect(getHistory('deck-a')).toEqual({})
+    expect(loadSession('deck-a')).toBeNull()
+    expect(getHistory('deck-b').q1.attempts).toBe(1)
   })
 
   it('computes deck stats from recorded attempts', () => {

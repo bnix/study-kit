@@ -1,6 +1,6 @@
 import { createEmptyCard, fsrs, State, type Card, type RecordLog } from 'ts-fsrs'
 import type { CardDeck } from '../types'
-import { readJson, removeKey, writeJson } from './storage'
+import { deckStore } from './storage'
 
 /**
  * Spaced-repetition state for flash cards, one storage entry per deck,
@@ -17,9 +17,7 @@ export type DeckCardStates = Record<string, CardRecord>
 
 const scheduler = fsrs({ enable_fuzz: true })
 
-function storageKey(deckSlug: string): string {
-  return `quizme:cards:${deckSlug}`
-}
+const store = deckStore<DeckCardStates>('cards', () => ({}))
 
 // JSON round-trips FSRS's Date fields as strings.
 function reviveRecord({ card, introducedAt }: CardRecord): CardRecord {
@@ -30,17 +28,11 @@ function reviveRecord({ card, introducedAt }: CardRecord): CardRecord {
 }
 
 export function getCardStates(deckSlug: string): DeckCardStates {
-  const stored = readJson<DeckCardStates>(storageKey(deckSlug), {})
+  const stored = store.get(deckSlug)
   return Object.fromEntries(Object.entries(stored).map(([id, record]) => [id, reviveRecord(record)]))
 }
 
-export function saveCardStates(deckSlug: string, states: DeckCardStates): void {
-  writeJson(storageKey(deckSlug), states)
-}
-
-export function clearCardStates(deckSlug: string): void {
-  removeKey(storageKey(deckSlug))
-}
+export const { set: saveCardStates, clear: clearCardStates } = store
 
 /** The resulting schedule for each possible grade of a card, as of `now`. */
 export function previewGrades(record: CardRecord | undefined, now: Date): RecordLog {

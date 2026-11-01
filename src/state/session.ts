@@ -1,4 +1,4 @@
-import { readJson, removeKey, writeJson } from './storage'
+import { deckStore } from './storage'
 
 export interface PersistedResult {
   questionId: string
@@ -12,18 +12,9 @@ export interface PersistedSession {
   results: PersistedResult[]
 }
 
-function storageKey(deckSlug: string): string {
-  return `quizme:session:${deckSlug}`
-}
-
-export function loadSession(deckSlug: string): PersistedSession | null {
-  return readJson<PersistedSession | null>(storageKey(deckSlug), null)
-}
-
-export function saveSession(deckSlug: string, session: PersistedSession): void {
-  writeJson(storageKey(deckSlug), session)
-}
-
-export function clearSession(deckSlug: string): void {
-  removeKey(storageKey(deckSlug))
-}
+/** The in-progress full-deck quiz, saved so a reload resumes where it left off. */
+export const {
+  get: loadSession,
+  set: saveSession,
+  clear: clearSession,
+} = deckStore<PersistedSession | null>('session', () => null)

@@ -1,6 +1,6 @@
 import type { Deck, MissedAnswer, MissedQuestionRecord, Question } from '../types'
 import { getHistory } from './history'
-import { hasKey, readJson, writeJson } from './storage'
+import { hasKey, readJson, storageKey, writeJson } from './storage'
 
 /**
  * Permanent log of every question ever answered wrong, across all decks. Unlike
@@ -8,8 +8,8 @@ import { hasKey, readJson, writeJson } from './storage'
  * full question so it can be exported (e.g. as LLM context for generating related
  * questions) even if the deck file later changes or disappears.
  */
-const STORAGE_KEY = 'quizme:missed-log'
-const BACKFILL_KEY = 'quizme:missed-log:backfilled'
+const STORAGE_KEY = storageKey('missed-log')
+const BACKFILL_KEY = storageKey('missed-log:backfilled')
 
 type MissLog = Record<string, MissedQuestionRecord>
 
