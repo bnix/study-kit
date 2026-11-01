@@ -1,7 +1,7 @@
-import type { CardDeck, Deck } from '../types'
+import type { AnyDeck } from '../types'
 import { parseDeckMeta } from './frontmatter'
 import { parseCardDeck } from './parseCardDeck'
-import { parseDeck } from './parseDeck'
+import { parseQuizDeck } from './parseQuizDeck'
 
 const contentModules = import.meta.glob<string>('/content/**/*.md', {
   query: '?raw',
@@ -24,31 +24,17 @@ function slugFromPath(path: string): string {
     .replace(/\.md$/, '')
 }
 
-const byTitle = (a: { title: string }, b: { title: string }) => a.title.localeCompare(b.title)
+function parseDeckFile(raw: string, slug: string): AnyDeck {
+  const meta = parseDeckMeta(raw)
+  return meta.kind === 'flashcards' ? parseCardDeck(meta, slug) : parseQuizDeck(meta, slug)
+}
 
-let cachedDecks: { quizzes: Deck[]; cardDecks: CardDeck[] } | null = null
+let cachedDecks: AnyDeck[] | undefined
 
-function loadAll() {
-  if (!cachedDecks) {
-    const quizzes: Deck[] = []
-    const cardDecks: CardDeck[] = []
-    for (const [path, raw] of Object.entries(rawDeckModules)) {
-      const meta = parseDeckMeta(raw)
-      const slug = slugFromPath(path)
-      if (meta.kind === 'flashcards') cardDecks.push(parseCardDeck(meta, slug))
-      else quizzes.push(parseDeck(meta, slug))
-    }
-    cachedDecks = { quizzes: quizzes.sort(byTitle), cardDecks: cardDecks.sort(byTitle) }
-  }
+/** Every deck found under `content/` (or the examples), sorted by title, parsed once and cached for the session. */
+export function loadDecks(): AnyDeck[] {
+  cachedDecks ??= Object.entries(rawDeckModules)
+    .map(([path, raw]) => parseDeckFile(raw, slugFromPath(path)))
+    .sort((a, b) => a.title.localeCompare(b.title))
   return cachedDecks
-}
-
-/** All quiz decks found under `content/` (or the examples), parsed once and cached for the session. */
-export function loadDecks(): Deck[] {
-  return loadAll().quizzes
-}
-
-/** All flash card decks (`kind: flashcards`) found under `content/` (or the examples). */
-export function loadCardDecks(): CardDeck[] {
-  return loadAll().cardDecks
 }

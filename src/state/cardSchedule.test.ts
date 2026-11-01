@@ -21,7 +21,7 @@ function card(id: string): Flashcard {
 }
 
 function deckOf(ids: string[], newPerDay = 20): CardDeck {
-  return { slug: 'deck', title: 'Deck', tags: [], newPerDay, cards: ids.map(card), warnings: [] }
+  return { kind: 'flashcards', slug: 'deck', title: 'Deck', tags: [], newPerDay, cards: ids.map(card), warnings: [] }
 }
 
 function gradedRecord(rating: Grade, at: Date, introducedAt = at): CardRecord {

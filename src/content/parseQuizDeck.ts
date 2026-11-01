@@ -1,7 +1,7 @@
 import { toString as mdastToString } from 'mdast-util-to-string'
 import { visit } from 'unist-util-visit'
 import type { Blockquote, Link, List, RootContent } from 'mdast'
-import type { Deck, Option, Question, Reference } from '../types'
+import type { QuizDeck, Option, Question, Reference } from '../types'
 import type { DeckMeta } from './frontmatter'
 import { hashText } from './hash'
 import { splitSections, type Section } from './sections'
@@ -55,8 +55,8 @@ function buildQuestion({ heading, body: bodyNodes }: Section): Question | null {
   }
 }
 
-/** Builds a quiz `Deck` from a parsed deck file. See the deck-format skill for the format spec. */
-export function parseDeck({ title, cert, tags, body }: DeckMeta, slug: string): Deck {
+/** Builds a `QuizDeck` from a parsed deck file. See the deck-format skill for the format spec. */
+export function parseQuizDeck({ title, cert, tags, body }: DeckMeta, slug: string): QuizDeck {
   const questions = splitSections(body).flatMap((section) => buildQuestion(section) ?? [])
-  return { slug, title, cert, tags, questions }
+  return { kind: 'quiz', slug, title, cert, tags, questions }
 }

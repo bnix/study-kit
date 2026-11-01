@@ -51,6 +51,7 @@ export function parseCardDeck({ title, cert, tags, frontmatter, body }: DeckMeta
   }
 
   return {
+    kind: 'flashcards',
     slug,
     title,
     cert,

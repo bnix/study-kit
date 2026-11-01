@@ -2,11 +2,11 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { clearHistory, getDeckStats, getHistory, recordAttempt, resetQuizProgress } from './history'
 import { loadSession, saveSession } from './session'
 
-import type { Deck } from '../types'
+import type { QuizDeck } from '../types'
 
-function deckWith(...questionIds: string[]): Deck {
+function deckWith(...questionIds: string[]): QuizDeck {
   const questions = questionIds.map((id) => ({ id, prompt: id, options: [], multiSelect: false, references: [] }))
-  return { slug: 'deck-a', title: 'Deck A', tags: [], questions }
+  return { kind: 'quiz', slug: 'deck-a', title: 'Deck A', tags: [], questions }
 }
 
 describe('history', () => {

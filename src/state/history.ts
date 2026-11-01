@@ -1,4 +1,4 @@
-import type { AttemptRecord, Deck, DeckHistory, Question } from '../types'
+import type { AttemptRecord, QuizDeck, DeckHistory, Question } from '../types'
 import { clearSession } from './session'
 import { deckStore } from './storage'
 
@@ -34,7 +34,7 @@ export interface DeckStats {
   missed: number
 }
 
-export function getDeckStats(deck: Deck): DeckStats {
+export function getDeckStats(deck: QuizDeck): DeckStats {
   const history = getHistory(deck.slug)
   let attempted = 0
   let mastered = 0
@@ -50,7 +50,7 @@ export function getDeckStats(deck: Deck): DeckStats {
 }
 
 /** Questions whose most recent attempt was wrong, in deck order. */
-export function getMissedQuestions(deck: Deck): Question[] {
+export function getMissedQuestions(deck: QuizDeck): Question[] {
   const history = getHistory(deck.slug)
   return deck.questions.filter((q) => history[q.id] && !history[q.id].lastResult)
 }

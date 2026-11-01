@@ -6,10 +6,11 @@ import { parseCardDeck } from '../content/parseCardDeck'
 import { getCardStates, saveCardStates } from '../state/cardSchedule'
 import { getHistory, recordAttempt } from '../state/history'
 import { loadSession, saveSession } from '../state/session'
-import type { Deck } from '../types'
+import type { QuizDeck } from '../types'
 import { CardDeckRow, QuizDeckRow } from './DeckRows'
 
-const quizDeck: Deck = {
+const quizDeck: QuizDeck = {
+  kind: 'quiz',
   slug: 'quiz',
   title: 'Quiz',
   tags: [],

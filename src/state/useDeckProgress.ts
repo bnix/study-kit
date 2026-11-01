@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { CardDeck, Deck } from '../types'
+import type { CardDeck, QuizDeck } from '../types'
 import { clearCardStates, getCardDeckStats, getCardStates } from './cardSchedule'
 import { getDeckStats, resetQuizProgress } from './history'
 import { loadSession } from './session'
@@ -17,7 +17,7 @@ function useStoredProgress<T>(read: () => T, clear: () => void) {
   return { ...progress, reset }
 }
 
-export function useQuizDeckProgress(deck: Deck) {
+export function useQuizDeckProgress(deck: QuizDeck) {
   return useStoredProgress(
     () => ({ stats: getDeckStats(deck), inProgress: loadSession(deck.slug) !== null }),
     () => resetQuizProgress(deck.slug),

@@ -6,9 +6,10 @@ import { loadSession } from './state/session'
 import { useQuizSession } from './state/useQuizSession'
 import { QuizView } from './components/QuizView'
 import { SessionSummary } from './components/SessionSummary'
-import type { Deck } from './types'
+import type { QuizDeck } from './types'
 
-const deck: Deck = {
+const deck: QuizDeck = {
+  kind: 'quiz',
   slug: 'test-deck',
   title: 'Test Deck',
   cert: 'Test Cert',

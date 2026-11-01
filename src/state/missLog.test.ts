@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import type { Deck } from '../types'
+import type { QuizDeck } from '../types'
 import { clearHistory, recordAttempt } from './history'
 import { backfillFromHistory, getMissLog, missLogToJson, missLogToMarkdown, recordMiss } from './missLog'
 
-const deck: Deck = {
+const deck: QuizDeck = {
+  kind: 'quiz',
   slug: 'deck-a',
   title: 'Deck A',
   cert: 'Cert X',
@@ -80,7 +81,7 @@ describe('missLog', () => {
 
   describe('backfillFromHistory', () => {
     const q2 = { ...q1, id: 'q2', prompt: 'Never missed.' }
-    const twoQuestionDeck: Deck = { ...deck, questions: [q1, q2] }
+    const twoQuestionDeck: QuizDeck = { ...deck, questions: [q1, q2] }
 
     it('imports every question ever missed, even if since answered correctly', () => {
       recordAttempt('deck-a', 'q1', false)

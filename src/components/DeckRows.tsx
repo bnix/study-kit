@@ -1,4 +1,4 @@
-import type { CardDeck, Deck } from '../types'
+import type { CardDeck, QuizDeck } from '../types'
 import type { StudyMode } from '../state/useCardSession'
 import { useCardDeckProgress, useQuizDeckProgress } from '../state/useDeckProgress'
 import type { QuizMode } from '../state/useQuizSession'
@@ -22,8 +22,8 @@ function ResetButton({ confirmText, onConfirm }: ResetButtonProps) {
 }
 
 interface QuizDeckRowProps {
-  deck: Deck
-  onStudy: (deck: Deck, mode: QuizMode) => void
+  deck: QuizDeck
+  onStudy: (deck: QuizDeck, mode: QuizMode) => void
 }
 
 export function QuizDeckRow({ deck, onStudy }: QuizDeckRowProps) {

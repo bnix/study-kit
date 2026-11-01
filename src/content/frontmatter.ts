@@ -1,4 +1,5 @@
 import { load } from 'js-yaml'
+import type { AnyDeck, DeckInfo } from '../types'
 
 const FRONTMATTER_PATTERN = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/
 
@@ -16,12 +17,9 @@ function splitFrontmatter(raw: string): { data: Record<string, unknown>; content
   return { data, content }
 }
 
-export interface DeckMeta {
+export interface DeckMeta extends Omit<DeckInfo, 'slug'> {
   /** `kind: flashcards` in frontmatter makes a card deck; anything else is a quiz. */
-  kind: 'quiz' | 'flashcards'
-  title: string
-  cert?: string
-  tags: string[]
+  kind: AnyDeck['kind']
   /** Raw frontmatter, for fields only one deck kind reads (e.g. `new_per_day`). */
   frontmatter: Record<string, unknown>
   /** The markdown after the frontmatter. */

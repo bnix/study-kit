@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { parseDeckMeta } from './frontmatter'
-import { parseDeck as parseDeckFile } from './parseDeck'
+import { parseQuizDeck } from './parseQuizDeck'
 
-const parseDeck = (raw: string, slug: string) => parseDeckFile(parseDeckMeta(raw), slug)
+const parseDeck = (raw: string, slug: string) => parseQuizDeck(parseDeckMeta(raw), slug)
 
-describe('parseDeck', () => {
+describe('parseQuizDeck', () => {
   it('parses deck frontmatter', () => {
     const raw = `---
 title: Bedrock Basics

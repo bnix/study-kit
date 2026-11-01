@@ -20,11 +20,16 @@ export interface Question {
   references: Reference[]
 }
 
-export interface Deck {
+/** What every deck kind reads from its frontmatter, plus the slug from its path. */
+export interface DeckInfo {
   slug: string
   title: string
   cert?: string
   tags: string[]
+}
+
+export interface QuizDeck extends DeckInfo {
+  kind: 'quiz'
   questions: Question[]
 }
 
@@ -70,14 +75,13 @@ export interface Flashcard {
   back: RootContent[]
 }
 
-export interface CardDeck {
-  slug: string
-  title: string
-  cert?: string
-  tags: string[]
+export interface CardDeck extends DeckInfo {
+  kind: 'flashcards'
   /** Most new cards a review session introduces per day. */
   newPerDay: number
   cards: Flashcard[]
   /** Cards skipped while parsing (no answer, duplicate front), surfaced in the deck picker. */
   warnings: string[]
 }
+
+export type AnyDeck = QuizDeck | CardDeck

@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { loadCardDecks, loadDecks } from './content/loadDecks'
-import type { CardDeck, Deck } from './types'
+import { loadDecks } from './content/loadDecks'
+import type { CardDeck, QuizDeck } from './types'
 import { CardSessionSummary } from './components/CardSessionSummary'
 import { CardStudyView } from './components/CardStudyView'
 import { DeckPicker } from './components/DeckPicker'
@@ -15,11 +15,11 @@ import './App.css'
 type Screen =
   | { kind: 'picker' }
   | { kind: 'missedLog' }
-  | { kind: 'quiz'; deck: Deck; mode: QuizMode }
+  | { kind: 'quiz'; deck: QuizDeck; mode: QuizMode }
   | { kind: 'cards'; deck: CardDeck; mode: StudyMode }
 
 interface ActiveQuizProps {
-  deck: Deck
+  deck: QuizDeck
   mode: QuizMode
   onExit: () => void
   onRestart: () => void
@@ -58,10 +58,9 @@ function ActiveCardDeck({ deck, mode, onExit, onStudy }: ActiveCardDeckProps) {
 export default function App() {
   const [decks] = useState(() => {
     const loaded = loadDecks()
-    backfillFromHistory(loaded)
+    backfillFromHistory(loaded.filter((deck) => deck.kind === 'quiz'))
     return loaded
   })
-  const [cardDecks] = useState(loadCardDecks)
   const [screen, setScreen] = useState<Screen>({ kind: 'picker' })
   // Bumped on every open/restart so a session remounts with fresh state.
   const [sessionKey, setSessionKey] = useState(0)
@@ -78,7 +77,6 @@ export default function App() {
         return (
           <DeckPicker
             decks={decks}
-            cardDecks={cardDecks}
             onStudyQuiz={(deck, mode) => open({ kind: 'quiz', deck, mode })}
             onStudyCards={(deck, mode) => open({ kind: 'cards', deck, mode })}
             onViewMissedLog={() => setScreen({ kind: 'missedLog' })}

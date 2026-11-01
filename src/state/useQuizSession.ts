@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useReducer, useState } from 'react'
-import type { Deck, Question } from '../types'
+import type { QuizDeck, Question } from '../types'
 import { getMissedQuestions, recordAttempt } from './history'
 import { recordMiss } from './missLog'
 import { clearSession, loadSession, saveSession, type PersistedResult } from './session'
@@ -52,7 +52,7 @@ function reducer(state: SessionState, action: SessionAction): SessionState {
 
 const emptyState: SessionState = { questionIndex: 0, selected: [], answered: false, results: [] }
 
-function restoreState(deck: Deck): SessionState {
+function restoreState(deck: QuizDeck): SessionState {
   const persisted = loadSession(deck.slug)
   if (!persisted) return emptyState
 
@@ -89,7 +89,7 @@ function restoreState(deck: Deck): SessionState {
 /** "full" runs the whole deck and saves/resumes progress; "missed" practices last-missed questions and isn't resumable. */
 export type QuizMode = 'full' | 'missed'
 
-export function useQuizSession(deck: Deck, mode: QuizMode) {
+export function useQuizSession(deck: QuizDeck, mode: QuizMode) {
   const persist = mode === 'full'
   // Snapshot the question set on mount so answering doesn't reshuffle a missed-only run
   // mid-session; a restart remounts and picks up whatever is still missed.

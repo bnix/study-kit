@@ -1,4 +1,4 @@
-import type { Deck, MissedAnswer, MissedQuestionRecord, Question } from '../types'
+import type { QuizDeck, MissedAnswer, MissedQuestionRecord, Question } from '../types'
 import { getHistory } from './history'
 import { hasKey, readJson, storageKey, writeJson } from './storage'
 
@@ -31,7 +31,7 @@ type QuestionSnapshot = Pick<
 >
 
 /** The full question as it reads now, so the log survives the deck file changing or disappearing. */
-function snapshotQuestion(deck: Deck, question: Question): QuestionSnapshot {
+function snapshotQuestion(deck: QuizDeck, question: Question): QuestionSnapshot {
   return {
     deckSlug: deck.slug,
     deckTitle: deck.title,
@@ -45,7 +45,7 @@ function snapshotQuestion(deck: Deck, question: Question): QuestionSnapshot {
   }
 }
 
-export function recordMiss(deck: Deck, question: Question, selectedIds: string[]): MissedQuestionRecord {
+export function recordMiss(deck: QuizDeck, question: Question, selectedIds: string[]): MissedQuestionRecord {
   const log = loadLog()
   const key = recordKey(deck.slug, question.id)
   const previous = log[key]
@@ -75,7 +75,7 @@ export function recordMiss(deck: Deck, question: Question, selectedIds: string[]
  * only has counts, so these records carry no answers and use the last attempt date
  * as the miss date. Questions no longer in any deck can't be rebuilt and are skipped.
  */
-export function backfillFromHistory(decks: Deck[]): void {
+export function backfillFromHistory(decks: QuizDeck[]): void {
   if (hasKey(BACKFILL_KEY)) return
 
   const log = loadLog()
