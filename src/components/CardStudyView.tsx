@@ -75,14 +75,9 @@ export function CardStudyView({ session, mode, onExit }: CardStudyViewProps) {
 
       <article className="flashcard" ref={cardRef} tabIndex={-1} aria-label="Flash card">
         <Markdown className="card-front" nodes={currentCard.front} />
-        <div aria-live="polite">
-          {revealed && (
-            <>
-              <hr className="card-divider" />
-              <Markdown className="card-back" nodes={currentCard.back} />
-            </>
-          )}
-        </div>
+        {/* The red rule of an index card: question above, answer below. */}
+        <hr className="card-divider" />
+        <div aria-live="polite">{revealed && <Markdown className="card-back" nodes={currentCard.back} />}</div>
       </article>
 
       <div className="card-actions">
@@ -98,7 +93,7 @@ export function CardStudyView({ session, mode, onExit }: CardStudyViewProps) {
             ))}
           </div>
         ) : (
-          <button className="reveal-button" onClick={reveal}>
+          <button className="reveal-button primary" onClick={reveal}>
             Show answer
           </button>
         )}

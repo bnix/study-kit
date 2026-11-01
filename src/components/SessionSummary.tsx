@@ -35,9 +35,9 @@ export function SessionSummary({ session, missedOnly = false, onRestart, onExit 
 
       <div className="summary-actions">
         {missedOnly ? (
-          missed.length > 0 && <button onClick={onRestart}>Practice missed again</button>
+          missed.length > 0 && <button className="primary" onClick={onRestart}>Practice missed again</button>
         ) : (
-          <button onClick={onRestart}>Retake this deck</button>
+          <button className="primary" onClick={onRestart}>Retake this deck</button>
         )}
         <button className="link-button" onClick={onExit}>
           Back to decks

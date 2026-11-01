@@ -24,7 +24,7 @@ export function QuizView({ session, onExit }: QuizViewProps) {
           data-question={questionNumber}
           data-total={totalQuestions}
         >
-          {String(questionNumber).padStart(2, '0')}/{totalQuestions}
+          Question {questionNumber} of {totalQuestions}
         </span>
       </ScreenHeader>
 
@@ -55,7 +55,7 @@ export function QuizView({ session, onExit }: QuizViewProps) {
                   disabled={answered}
                   onChange={() => toggleOption(option.id)}
                 />
-                <span className="option-id">{option.id}.</span> {option.text}
+                <span className="option-id">{option.id}.</span> <span className="option-text">{option.text}</span>
               </label>
             </li>
           )
@@ -63,7 +63,7 @@ export function QuizView({ session, onExit }: QuizViewProps) {
       </ul>
 
       {!answered && (
-        <button onClick={submit} disabled={selected.length === 0}>
+        <button className="primary" onClick={submit} disabled={selected.length === 0}>
           Submit
         </button>
       )}
@@ -83,7 +83,7 @@ export function QuizView({ session, onExit }: QuizViewProps) {
               ))}
             </ul>
           )}
-          <button onClick={next}>{questionNumber === totalQuestions ? 'See results' : 'Next question'}</button>
+          <button className="primary" onClick={next}>{questionNumber === totalQuestions ? 'See results' : 'Next question'}</button>
         </div>
       )}
     </div>
