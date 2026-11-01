@@ -1,24 +1,12 @@
 import type { AttemptRecord, DeckHistory } from '../types'
+import { readJson, removeKey, writeJson } from './storage'
 
 function storageKey(deckSlug: string): string {
   return `quizme:history:${deckSlug}`
 }
 
 export function getHistory(deckSlug: string): DeckHistory {
-  try {
-    const raw = localStorage.getItem(storageKey(deckSlug))
-    return raw ? (JSON.parse(raw) as DeckHistory) : {}
-  } catch {
-    return {}
-  }
-}
-
-function saveHistory(deckSlug: string, history: DeckHistory): void {
-  try {
-    localStorage.setItem(storageKey(deckSlug), JSON.stringify(history))
-  } catch {
-    // localStorage unavailable (private browsing, quota, etc.) — history just won't persist.
-  }
+  return readJson<DeckHistory>(storageKey(deckSlug), {})
 }
 
 export function recordAttempt(deckSlug: string, questionId: string, wasCorrect: boolean): DeckHistory {
@@ -33,16 +21,12 @@ export function recordAttempt(deckSlug: string, questionId: string, wasCorrect: 
   }
 
   const nextHistory: DeckHistory = { ...history, [questionId]: updated }
-  saveHistory(deckSlug, nextHistory)
+  writeJson(storageKey(deckSlug), nextHistory)
   return nextHistory
 }
 
 export function clearHistory(deckSlug: string): void {
-  try {
-    localStorage.removeItem(storageKey(deckSlug))
-  } catch {
-    // localStorage unavailable — nothing to clear.
-  }
+  removeKey(storageKey(deckSlug))
 }
 
 export interface DeckStats {
@@ -65,3 +49,4 @@ export function getDeckStats(deckSlug: string, questionIds: string[]): DeckStats
 
   return { total: questionIds.length, attempted, mastered }
 }
+

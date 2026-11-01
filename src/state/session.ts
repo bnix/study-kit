@@ -1,3 +1,5 @@
+import { readJson, removeKey, writeJson } from './storage'
+
 export interface PersistedResult {
   questionId: string
   correct: boolean
@@ -15,26 +17,13 @@ function storageKey(deckSlug: string): string {
 }
 
 export function loadSession(deckSlug: string): PersistedSession | null {
-  try {
-    const raw = localStorage.getItem(storageKey(deckSlug))
-    return raw ? (JSON.parse(raw) as PersistedSession) : null
-  } catch {
-    return null
-  }
+  return readJson<PersistedSession | null>(storageKey(deckSlug), null)
 }
 
 export function saveSession(deckSlug: string, session: PersistedSession): void {
-  try {
-    localStorage.setItem(storageKey(deckSlug), JSON.stringify(session))
-  } catch {
-    // localStorage unavailable (private browsing, quota, etc.) — session just won't persist.
-  }
+  writeJson(storageKey(deckSlug), session)
 }
 
 export function clearSession(deckSlug: string): void {
-  try {
-    localStorage.removeItem(storageKey(deckSlug))
-  } catch {
-    // localStorage unavailable — nothing to clear.
-  }
+  removeKey(storageKey(deckSlug))
 }
