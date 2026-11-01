@@ -1,9 +1,9 @@
-import type { useQuizSession } from '../state/useQuizSession'
+import type { QuizSession } from '../state/useQuizSession'
 import { Meter } from './Meter'
 import { ScreenHeader } from './ScreenHeader'
 
 interface QuizViewProps {
-  session: ReturnType<typeof useQuizSession>
+  session: QuizSession
   onExit: () => void
 }
 

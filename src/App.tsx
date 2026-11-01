@@ -7,34 +7,28 @@ import { DeckPicker } from './components/DeckPicker'
 import { MissedLogView } from './components/MissedLogView'
 import { QuizView } from './components/QuizView'
 import { SessionSummary } from './components/SessionSummary'
-import { getMissedQuestions } from './state/history'
 import { backfillFromHistory } from './state/missLog'
 import { useCardSession, type StudyMode } from './state/useCardSession'
-import { useQuizSession } from './state/useQuizSession'
+import { useQuizSession, type QuizMode } from './state/useQuizSession'
 import './App.css'
 
 type Screen =
   | { kind: 'picker' }
   | { kind: 'missedLog' }
-  | { kind: 'quiz'; deck: Deck; missedOnly: boolean }
+  | { kind: 'quiz'; deck: Deck; mode: QuizMode }
   | { kind: 'cards'; deck: CardDeck; mode: StudyMode }
 
-interface ActiveDeckProps {
+interface ActiveQuizProps {
   deck: Deck
-  missedOnly: boolean
+  mode: QuizMode
   onExit: () => void
   onRestart: () => void
 }
 
-function ActiveDeck({ deck, missedOnly, onExit, onRestart }: ActiveDeckProps) {
-  // Snapshot the missed set on mount so answering doesn't reshuffle the session mid-run;
-  // a restart remounts and picks up whatever is still missed.
-  const [sessionDeck] = useState(() =>
-    missedOnly ? { ...deck, questions: getMissedQuestions(deck) } : deck,
-  )
-  const session = useQuizSession(sessionDeck, { persist: !missedOnly })
+function ActiveQuiz({ deck, mode, onExit, onRestart }: ActiveQuizProps) {
+  const session = useQuizSession(deck, mode)
   return session.isComplete ? (
-    <SessionSummary session={session} missedOnly={missedOnly} onRestart={onRestart} onExit={onExit} />
+    <SessionSummary session={session} onRestart={onRestart} onExit={onExit} />
   ) : (
     <QuizView session={session} onExit={onExit} />
   )
@@ -87,7 +81,7 @@ export default function App() {
           <DeckPicker
             decks={decks}
             cardDecks={cardDecks}
-            onSelect={(deck, missedOnly = false) => open({ kind: 'quiz', deck, missedOnly })}
+            onStudyQuiz={(deck, mode) => open({ kind: 'quiz', deck, mode })}
             onStudyCards={(deck, mode) => open({ kind: 'cards', deck, mode })}
             onViewMissedLog={() => setScreen({ kind: 'missedLog' })}
           />
@@ -96,10 +90,10 @@ export default function App() {
         return <MissedLogView onExit={toPicker} />
       case 'quiz':
         return (
-          <ActiveDeck
+          <ActiveQuiz
             key={sessionKey}
             deck={screen.deck}
-            missedOnly={screen.missedOnly}
+            mode={screen.mode}
             onExit={toPicker}
             onRestart={() => open(screen)}
           />

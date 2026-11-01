@@ -1,6 +1,7 @@
 import type { CardDeck, Deck } from '../types'
 import { getMissLog } from '../state/missLog'
 import type { StudyMode } from '../state/useCardSession'
+import type { QuizMode } from '../state/useQuizSession'
 import { CardDeckRow, QuizDeckRow } from './DeckRows'
 
 interface CertGroup {
@@ -23,12 +24,12 @@ function groupByCert(quizzes: Deck[], cardDecks: CardDeck[]): CertGroup[] {
 interface DeckPickerProps {
   decks: Deck[]
   cardDecks: CardDeck[]
-  onSelect: (deck: Deck, practiceMissed?: boolean) => void
+  onStudyQuiz: (deck: Deck, mode: QuizMode) => void
   onStudyCards: (deck: CardDeck, mode: StudyMode) => void
   onViewMissedLog: () => void
 }
 
-export function DeckPicker({ decks, cardDecks, onSelect, onStudyCards, onViewMissedLog }: DeckPickerProps) {
+export function DeckPicker({ decks, cardDecks, onStudyQuiz, onStudyCards, onViewMissedLog }: DeckPickerProps) {
   if (decks.length === 0 && cardDecks.length === 0) {
     return (
       <div className="deck-picker">
@@ -58,7 +59,7 @@ export function DeckPicker({ decks, cardDecks, onSelect, onStudyCards, onViewMis
           {quizzes.length > 0 && (
             <ul>
               {quizzes.map((deck) => (
-                <QuizDeckRow key={deck.slug} deck={deck} onSelect={onSelect} />
+                <QuizDeckRow key={deck.slug} deck={deck} onStudy={onStudyQuiz} />
               ))}
             </ul>
           )}

@@ -40,7 +40,7 @@ const deck: Deck = {
 }
 
 function Harness({ onRestart }: { onRestart: () => void }) {
-  const session = useQuizSession(deck)
+  const session = useQuizSession(deck, 'full')
   return session.isComplete ? (
     <SessionSummary session={session} onRestart={onRestart} onExit={() => {}} />
   ) : (
@@ -134,9 +134,9 @@ describe('quiz session flow', () => {
     unmount()
 
     function MissedHarness() {
-      const session = useQuizSession({ ...deck, questions: missed }, { persist: false })
+      const session = useQuizSession(deck, 'missed')
       return session.isComplete ? (
-        <SessionSummary session={session} missedOnly onRestart={() => {}} onExit={() => {}} />
+        <SessionSummary session={session} onRestart={() => {}} onExit={() => {}} />
       ) : (
         <QuizView session={session} onExit={() => {}} />
       )

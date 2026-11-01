@@ -1,16 +1,15 @@
-import type { useQuizSession } from '../state/useQuizSession'
+import type { QuizSession } from '../state/useQuizSession'
 import { ExpandableList } from './ExpandableList'
 import { QuestionReview } from './QuestionReview'
 
 interface SessionSummaryProps {
-  session: ReturnType<typeof useQuizSession>
-  missedOnly?: boolean
+  session: QuizSession
   onRestart: () => void
   onExit: () => void
 }
 
-export function SessionSummary({ session, missedOnly = false, onRestart, onExit }: SessionSummaryProps) {
-  const { score, totalQuestions, results } = session
+export function SessionSummary({ session, onRestart, onExit }: SessionSummaryProps) {
+  const { mode, score, totalQuestions, results } = session
   const missed = results.filter((r) => !r.correct)
 
   return (
@@ -34,7 +33,7 @@ export function SessionSummary({ session, missedOnly = false, onRestart, onExit 
       )}
 
       <div className="summary-actions">
-        {missedOnly ? (
+        {mode === 'missed' ? (
           missed.length > 0 && <button className="primary" onClick={onRestart}>Practice missed again</button>
         ) : (
           <button className="primary" onClick={onRestart}>Retake this deck</button>

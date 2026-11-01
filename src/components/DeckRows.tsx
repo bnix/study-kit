@@ -4,6 +4,7 @@ import { clearCardStates, getCardDeckStats, getCardStates } from '../state/cardS
 import { clearHistory, getDeckStats } from '../state/history'
 import { clearSession, loadSession } from '../state/session'
 import type { StudyMode } from '../state/useCardSession'
+import type { QuizMode } from '../state/useQuizSession'
 import { formatInterval } from './formatInterval'
 import { Meter } from './Meter'
 
@@ -28,10 +29,10 @@ function ResetButton({ confirmText, onConfirm }: ResetButtonProps) {
 
 interface QuizDeckRowProps {
   deck: Deck
-  onSelect: (deck: Deck, practiceMissed?: boolean) => void
+  onStudy: (deck: Deck, mode: QuizMode) => void
 }
 
-export function QuizDeckRow({ deck, onSelect }: QuizDeckRowProps) {
+export function QuizDeckRow({ deck, onStudy }: QuizDeckRowProps) {
   const refresh = useRefresh()
   const stats = getDeckStats(
     deck.slug,
@@ -42,7 +43,7 @@ export function QuizDeckRow({ deck, onSelect }: QuizDeckRowProps) {
 
   return (
     <li className="deck-row">
-      <button className="deck-select" onClick={() => onSelect(deck)}>
+      <button className="deck-select" onClick={() => onStudy(deck, 'full')}>
         <span className="deck-title">{deck.title}</span>
         <span className="deck-count">{deck.questions.length} questions</span>
       </button>
@@ -58,7 +59,7 @@ export function QuizDeckRow({ deck, onSelect }: QuizDeckRowProps) {
           )}
           {inProgress && <span className="deck-status">in progress</span>}
           {stats.missed > 0 && (
-            <button className="link-button practice-missed" onClick={() => onSelect(deck, true)}>
+            <button className="link-button practice-missed" onClick={() => onStudy(deck, 'missed')}>
               Practice {stats.missed} missed
             </button>
           )}

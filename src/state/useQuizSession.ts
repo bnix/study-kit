@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useReducer } from 'react'
+import { useEffect, useMemo, useReducer, useState } from 'react'
 import type { Deck, Question } from '../types'
-import { recordAttempt } from './history'
+import { getMissedQuestions, recordAttempt } from './history'
 import { recordMiss } from './missLog'
 import { clearSession, loadSession, saveSession, type PersistedResult } from './session'
 
@@ -86,15 +86,17 @@ function restoreState(deck: Deck): SessionState {
   }
 }
 
-interface SessionOptions {
-  /** Save/resume progress in localStorage. Off for ad-hoc subsets (e.g. missed-only practice). */
-  persist?: boolean
-}
+/** "full" runs the whole deck and saves/resumes progress; "missed" practices last-missed questions and isn't resumable. */
+export type QuizMode = 'full' | 'missed'
 
-export function useQuizSession(deck: Deck, { persist = true }: SessionOptions = {}) {
+export function useQuizSession(deck: Deck, mode: QuizMode) {
+  const persist = mode === 'full'
+  // Snapshot the question set on mount so answering doesn't reshuffle a missed-only run
+  // mid-session; a restart remounts and picks up whatever is still missed.
+  const [questions] = useState(() => (mode === 'missed' ? getMissedQuestions(deck) : deck.questions))
   const [state, dispatch] = useReducer(reducer, deck, (d) => (persist ? restoreState(d) : emptyState))
 
-  const isComplete = state.questionIndex >= deck.questions.length
+  const isComplete = state.questionIndex >= questions.length
 
   useEffect(() => {
     if (!persist) return
@@ -105,7 +107,7 @@ export function useQuizSession(deck: Deck, { persist = true }: SessionOptions = 
     }
   }, [deck.slug, isComplete, persist, state])
 
-  const currentQuestion = deck.questions[state.questionIndex]
+  const currentQuestion = questions[state.questionIndex]
 
   const isCorrect = useMemo(() => {
     if (!currentQuestion) return false
@@ -137,16 +139,17 @@ export function useQuizSession(deck: Deck, { persist = true }: SessionOptions = 
   const results: QuestionResult[] = useMemo(
     () =>
       state.results.map((r) => ({
-        question: deck.questions.find((q) => q.id === r.questionId)!,
+        question: questions.find((q) => q.id === r.questionId)!,
         correct: r.correct,
       })),
-    [deck.questions, state.results],
+    [questions, state.results],
   )
 
   return {
+    mode,
     currentQuestion,
     questionNumber: state.questionIndex + 1,
-    totalQuestions: deck.questions.length,
+    totalQuestions: questions.length,
     selected: state.selected,
     answered: state.answered,
     isCorrect,
@@ -158,3 +161,5 @@ export function useQuizSession(deck: Deck, { persist = true }: SessionOptions = 
     next,
   }
 }
+
+export type QuizSession = ReturnType<typeof useQuizSession>
