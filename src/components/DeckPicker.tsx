@@ -44,7 +44,7 @@ export function DeckPicker({ decks, cardDecks, onSelect, onStudyCards, onViewMis
 
   return (
     <div className="deck-picker">
-      <h1>Quiz Me</h1>
+      <h1>Study Kit</h1>
       {missedLogCount > 0 && (
         <p className="missed-log-link">
           <button className="link-button" onClick={onViewMissedLog}>

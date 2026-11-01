@@ -25,7 +25,7 @@ export function MissedLogView({ onExit }: MissedLogViewProps) {
   const decks = new Map(records.map((r) => [r.deckSlug, r.deckTitle]))
   const visible = deckFilter === 'all' ? records : records.filter((r) => r.deckSlug === deckFilter)
   const stamp = new Date().toISOString().slice(0, 10)
-  const baseName = `quizme-missed-${deckFilter === 'all' ? 'all' : deckFilter}-${stamp}`
+  const baseName = `studykit-missed-${deckFilter === 'all' ? 'all' : deckFilter}-${stamp}`
 
   async function copyMarkdown() {
     try {

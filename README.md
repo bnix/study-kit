@@ -1,4 +1,4 @@
-# Quiz Me
+# Study Kit
 
 A study app that runs in your browser and turns Markdown files into practice
 tests and spaced-repetition flash cards. It was built for AWS certification
@@ -53,7 +53,7 @@ private. Either:
   vault, so you can edit decks where you write everything else:
 
   ```sh
-  ln -s /path/to/your/notes/QuizMeDecks content
+  ln -s /path/to/your/notes/StudyKitDecks content
   ```
 
 Restart `npm run dev` after creating the folder or link. After that, edits to
