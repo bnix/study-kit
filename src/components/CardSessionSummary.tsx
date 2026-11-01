@@ -1,30 +1,28 @@
 import { Rating, type Grade } from 'ts-fsrs'
-import type { CardDeck, Flashcard } from '../types'
+import type { Flashcard } from '../types'
 import { getCardDeckStats } from '../state/cardSchedule'
-import type { CardSession, StudyMode } from '../state/useCardSession'
+import type { CardSession } from '../state/useCardSession'
 import { ExpandableList } from './ExpandableList'
 import { formatInterval } from './formatInterval'
 import { Markdown } from './Markdown'
 
 interface CardSessionSummaryProps {
-  deck: CardDeck
   session: CardSession
-  mode: StudyMode
   onRestart: () => void
   onStudyAll: () => void
   onExit: () => void
 }
 
 /** Cards graded in the session that match `include`, each once, in first-graded order. */
-function uniqueCards(deck: CardDeck, session: CardSession, include: (rating: Grade) => boolean): Flashcard[] {
-  const ids = new Set(session.grades.filter((g) => include(g.rating)).map((g) => g.cardId))
+function uniqueCards({ deck, grades }: CardSession, include: (rating: Grade) => boolean): Flashcard[] {
+  const ids = new Set(grades.filter((g) => include(g.rating)).map((g) => g.cardId))
   return [...ids].flatMap((id) => deck.cards.filter((c) => c.id === id))
 }
 
-export function CardSessionSummary({ deck, session, mode, onRestart, onStudyAll, onExit }: CardSessionSummaryProps) {
-  const { grades, states, canUndo, undo } = session
-  const studied = uniqueCards(deck, session, () => true)
-  const againCards = uniqueCards(deck, session, (r) => r === Rating.Again)
+export function CardSessionSummary({ session, onRestart, onStudyAll, onExit }: CardSessionSummaryProps) {
+  const { deck, mode, grades, states, canUndo, undo } = session
+  const studied = uniqueCards(session, () => true)
+  const againCards = uniqueCards(session, (r) => r === Rating.Again)
   const againCount = grades.filter((g) => g.rating === Rating.Again).length
 
   const now = new Date()

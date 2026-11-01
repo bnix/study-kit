@@ -28,9 +28,9 @@ Back two.
 function Harness({ mode = 'review' }: { mode?: StudyMode }) {
   const session = useCardSession(deck, mode)
   return session.isComplete ? (
-    <CardSessionSummary deck={deck} session={session} mode={mode} onRestart={() => {}} onStudyAll={() => {}} onExit={() => {}} />
+    <CardSessionSummary session={session} onRestart={() => {}} onStudyAll={() => {}} onExit={() => {}} />
   ) : (
-    <CardStudyView session={session} mode={mode} onExit={() => {}} />
+    <CardStudyView session={session} onExit={() => {}} />
   )
 }
 

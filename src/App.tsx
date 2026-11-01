@@ -45,15 +45,13 @@ function ActiveCardDeck({ deck, mode, onExit, onStudy }: ActiveCardDeckProps) {
   const session = useCardSession(deck, mode)
   return session.isComplete ? (
     <CardSessionSummary
-      deck={deck}
       session={session}
-      mode={mode}
       onRestart={() => onStudy('review')}
       onStudyAll={() => onStudy('cram')}
       onExit={onExit}
     />
   ) : (
-    <CardStudyView session={session} mode={mode} onExit={onExit} />
+    <CardStudyView session={session} onExit={onExit} />
   )
 }
 

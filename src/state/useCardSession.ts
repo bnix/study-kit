@@ -13,7 +13,10 @@ import {
   type DeckCardStates,
 } from './cardSchedule'
 
-/** "review" studies what's due and updates the schedule; "cram" runs the whole deck and saves nothing. */
+/**
+ * "review" studies what's due and saves the schedule; "cram" runs the whole deck. Both grade
+ * the same way in memory: cram just never writes the result back to storage.
+ */
 export type StudyMode = 'review' | 'cram'
 
 /** A card rated Again comes back this many cards later in the same session. */
@@ -39,8 +42,7 @@ interface SessionState extends SessionSnapshot {
 
 type SessionAction =
   | { type: 'reveal' }
-  /** `record` is the card's new schedule, or null when grading shouldn't change it (cram). */
-  | { type: 'grade'; cardId: string; rating: Grade; record: CardRecord | null }
+  | { type: 'grade'; cardId: string; rating: Grade; record: CardRecord }
   | { type: 'undo' }
 
 function reducer(state: SessionState, action: SessionAction): SessionState {
@@ -58,7 +60,7 @@ function reducer(state: SessionState, action: SessionAction): SessionState {
         queue,
         position: state.position + 1,
         revealed: false,
-        states: action.record ? { ...state.states, [action.cardId]: action.record } : state.states,
+        states: { ...state.states, [action.cardId]: action.record },
         grades: [...state.grades, { cardId: action.cardId, rating: action.rating }],
         undoStack: [...undoStack, snapshot],
       }
@@ -104,11 +106,12 @@ export function useCardSession(deck: CardDeck, mode: StudyMode) {
   function grade(rating: Grade) {
     if (!currentCard || !previews) return
     const introducedAt = state.states[currentCard.id]?.introducedAt ?? new Date().toISOString()
-    const record = mode === 'review' ? { card: previews[rating].card, introducedAt } : null
-    dispatch({ type: 'grade', cardId: currentCard.id, rating, record })
+    dispatch({ type: 'grade', cardId: currentCard.id, rating, record: { card: previews[rating].card, introducedAt } })
   }
 
   return {
+    deck,
+    mode,
     currentCard,
     isComplete: state.position >= state.queue.length,
     revealed: state.revealed,

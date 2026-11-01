@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { Rating, type Grade } from 'ts-fsrs'
-import type { CardSession, StudyMode } from '../state/useCardSession'
+import type { CardSession } from '../state/useCardSession'
 import { formatInterval } from './formatInterval'
 import { Markdown } from './Markdown'
 import { ScreenHeader } from './ScreenHeader'
@@ -16,12 +16,11 @@ const GRADE_BY_KEY = new Map(GRADES.map((g) => [g.key, g.rating]))
 
 interface CardStudyViewProps {
   session: CardSession
-  mode: StudyMode
   onExit: () => void
 }
 
-export function CardStudyView({ session, mode, onExit }: CardStudyViewProps) {
-  const { currentCard, revealed, previews, remaining, canUndo, reveal, grade, undo } = session
+export function CardStudyView({ session, onExit }: CardStudyViewProps) {
+  const { mode, currentCard, revealed, previews, remaining, canUndo, reveal, grade, undo } = session
   const cardRef = useRef<HTMLElement>(null)
   const gradesRef = useRef<HTMLDivElement>(null)
 
