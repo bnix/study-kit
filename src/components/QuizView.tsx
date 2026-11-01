@@ -1,4 +1,6 @@
 import type { useQuizSession } from '../state/useQuizSession'
+import { Meter } from './Meter'
+import { ScreenHeader } from './ScreenHeader'
 
 interface QuizViewProps {
   session: ReturnType<typeof useQuizSession>
@@ -15,14 +17,18 @@ export function QuizView({ session, onExit }: QuizViewProps) {
 
   return (
     <div className="quiz-view">
-      <div className="quiz-header">
-        <button className="link-button" onClick={onExit}>
-          &larr; Back to decks
-        </button>
-        <span>
-          Question {questionNumber} / {totalQuestions}
+      <ScreenHeader onExit={onExit}>
+        <span
+          className="header-counter"
+          data-testid="quiz-counter"
+          data-question={questionNumber}
+          data-total={totalQuestions}
+        >
+          {String(questionNumber).padStart(2, '0')}/{totalQuestions}
         </span>
-      </div>
+      </ScreenHeader>
+
+      <Meter className="quiz-progress" value={questionNumber} max={totalQuestions} />
 
       <p className="prompt">{currentQuestion.prompt}</p>
       {currentQuestion.multiSelect && <p className="hint">Select all that apply.</p>}

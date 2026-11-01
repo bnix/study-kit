@@ -1,7 +1,20 @@
-import { useState } from 'react'
 import type { Deck } from '../types'
-import { clearHistory, getDeckStats } from '../state/history'
-import { clearSession, loadSession } from '../state/session'
+import { QuizDeckRow } from './DeckRows'
+
+interface CertGroup {
+  cert: string
+  quizzes: Deck[]
+}
+
+function groupByCert(quizzes: Deck[]): CertGroup[] {
+  const groups = new Map<string, CertGroup>()
+  const groupFor = (cert = 'Other') => {
+    if (!groups.has(cert)) groups.set(cert, { cert, quizzes: [] })
+    return groups.get(cert)!
+  }
+  for (const deck of quizzes) groupFor(deck.cert).quizzes.push(deck)
+  return [...groups.values()]
+}
 
 interface DeckPickerProps {
   decks: Deck[]
@@ -9,15 +22,6 @@ interface DeckPickerProps {
 }
 
 export function DeckPicker({ decks, onSelect }: DeckPickerProps) {
-  const [, forceRefresh] = useState(0)
-
-  function resetProgress(deck: Deck) {
-    if (!window.confirm(`Reset all saved progress for "${deck.title}"? This can't be undone.`)) return
-    clearHistory(deck.slug)
-    clearSession(deck.slug)
-    forceRefresh((n) => n + 1)
-  }
-
   if (decks.length === 0) {
     return (
       <div className="deck-picker">
@@ -29,45 +33,16 @@ export function DeckPicker({ decks, onSelect }: DeckPickerProps) {
     )
   }
 
-  const groups = new Map<string, Deck[]>()
-  for (const deck of decks) {
-    const key = deck.cert ?? 'Other'
-    groups.set(key, [...(groups.get(key) ?? []), deck])
-  }
-
   return (
     <div className="deck-picker">
       <h1>Quiz Me</h1>
-      {[...groups.entries()].map(([cert, certDecks]) => (
+      {groupByCert(decks).map(({ cert, quizzes }) => (
         <section key={cert}>
           <h2>{cert}</h2>
           <ul>
-            {certDecks.map((deck) => {
-              const questionIds = deck.questions.map((q) => q.id)
-              const stats = getDeckStats(deck.slug, questionIds)
-              const inProgress = loadSession(deck.slug) !== null
-
-              return (
-                <li key={deck.slug} className="deck-row">
-                  <button onClick={() => onSelect(deck)}>
-                    {deck.title}
-                    <span className="deck-meta"> · {deck.questions.length} questions</span>
-                    {stats.attempted > 0 && (
-                      <span className="deck-progress">
-                        {' '}
-                        · {stats.mastered}/{stats.total} mastered
-                      </span>
-                    )}
-                    {inProgress && <span className="deck-progress"> · in progress</span>}
-                  </button>
-                  {stats.attempted > 0 && (
-                    <button className="link-button reset-progress" onClick={() => resetProgress(deck)}>
-                      Reset progress
-                    </button>
-                  )}
-                </li>
-              )
-            })}
+            {quizzes.map((deck) => (
+              <QuizDeckRow key={deck.slug} deck={deck} onSelect={onSelect} />
+            ))}
           </ul>
         </section>
       ))}

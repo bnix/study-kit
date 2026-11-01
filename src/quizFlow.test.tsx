@@ -53,7 +53,7 @@ describe('quiz session flow', () => {
     const { unmount } = render(<Harness onRestart={() => {}} />)
 
     // Q1: answer correctly (single-select).
-    expect(screen.getByText(/question 1 \/ 2/i)).toBeInTheDocument()
+    expect(screen.getByTestId('quiz-counter')).toHaveAttribute('data-question', '1')
     fireEvent.click(screen.getByLabelText(/4$/))
     fireEvent.click(screen.getByRole('button', { name: /submit/i }))
     expect(screen.getByText(/correct!/i)).toBeInTheDocument()
@@ -61,7 +61,7 @@ describe('quiz session flow', () => {
     fireEvent.click(screen.getByRole('button', { name: /next question/i }))
 
     // Q2: select only one of the two correct options (multi-select) -> incorrect.
-    expect(screen.getByText(/question 2 \/ 2/i)).toBeInTheDocument()
+    expect(screen.getByTestId('quiz-counter')).toHaveAttribute('data-question', '2')
     fireEvent.click(screen.getByLabelText(/2$/))
     fireEvent.click(screen.getByRole('button', { name: /submit/i }))
     expect(screen.getByText(/not quite/i)).toBeInTheDocument()
@@ -81,7 +81,7 @@ describe('quiz session flow', () => {
     // Session cleared once the deck is complete, so a fresh mount starts over.
     unmount()
     render(<Harness onRestart={() => {}} />)
-    expect(screen.getByText(/question 1 \/ 2/i)).toBeInTheDocument()
+    expect(screen.getByTestId('quiz-counter')).toHaveAttribute('data-question', '1')
   })
 
   it('resumes an in-progress session after remounting mid-deck', () => {
@@ -90,12 +90,12 @@ describe('quiz session flow', () => {
     fireEvent.click(screen.getByLabelText(/4$/))
     fireEvent.click(screen.getByRole('button', { name: /submit/i }))
     fireEvent.click(screen.getByRole('button', { name: /next question/i }))
-    expect(screen.getByText(/question 2 \/ 2/i)).toBeInTheDocument()
+    expect(screen.getByTestId('quiz-counter')).toHaveAttribute('data-question', '2')
     unmount()
 
     // A fresh mount (e.g. after a page reload) should pick up where we left off.
     render(<Harness onRestart={() => {}} />)
-    expect(screen.getByText(/question 2 \/ 2/i)).toBeInTheDocument()
+    expect(screen.getByTestId('quiz-counter')).toHaveAttribute('data-question', '2')
   })
 
   it('skips past an answered question left on the feedback screen when resumed', () => {
@@ -109,7 +109,7 @@ describe('quiz session flow', () => {
 
     // Resuming should land fresh on Q2, not re-show Q1's feedback.
     render(<Harness onRestart={() => {}} />)
-    expect(screen.getByText(/question 2 \/ 2/i)).toBeInTheDocument()
+    expect(screen.getByTestId('quiz-counter')).toHaveAttribute('data-question', '2')
     expect(screen.queryByText(/correct!/i)).not.toBeInTheDocument()
   })
 })
