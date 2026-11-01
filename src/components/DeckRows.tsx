@@ -1,7 +1,10 @@
 import { useReducer } from 'react'
-import type { Deck } from '../types'
+import type { CardDeck, Deck } from '../types'
+import { clearCardStates, getCardDeckStats, getCardStates } from '../state/cardSchedule'
 import { clearHistory, getDeckStats } from '../state/history'
 import { clearSession, loadSession } from '../state/session'
+import type { StudyMode } from '../state/useCardSession'
+import { formatInterval } from './formatInterval'
 import { Meter } from './Meter'
 
 // Rows read their stats straight from storage at render; a reset bumps this to re-read.
@@ -70,6 +73,67 @@ export function QuizDeckRow({ deck, onSelect }: QuizDeckRowProps) {
             />
           )}
         </div>
+      )}
+    </li>
+  )
+}
+
+interface CardDeckRowProps {
+  deck: CardDeck
+  onStudy: (deck: CardDeck, mode: StudyMode) => void
+}
+
+export function CardDeckRow({ deck, onStudy }: CardDeckRowProps) {
+  const refresh = useRefresh()
+  const now = new Date()
+  const stats = getCardDeckStats(deck, getCardStates(deck.slug), now)
+
+  return (
+    <li className="deck-row">
+      <button className="deck-select" onClick={() => onStudy(deck, 'review')}>
+        <span className="deck-title">{deck.title}</span>
+        <span className="deck-count">{deck.cards.length} cards</span>
+      </button>
+      <div className="deck-meta-row">
+        {stats.studied > 0 && (
+          <>
+            <Meter className="deck-meter" value={stats.learned} max={stats.total} />
+            <span>
+              {stats.learned}/{stats.total} learned
+            </span>
+          </>
+        )}
+        {stats.due + stats.newToday > 0 ? (
+          <span className="deck-status">
+            {stats.due} due · {stats.newToday} new
+          </span>
+        ) : (
+          stats.nextDueAt && <span>next in {formatInterval(now, stats.nextDueAt)}</span>
+        )}
+        <button className="link-button" onClick={() => onStudy(deck, 'cram')}>
+          Study all
+        </button>
+        {stats.studied > 0 && (
+          <ResetButton
+            confirmText={`Reset the review schedule for "${deck.title}"?`}
+            onConfirm={() => {
+              clearCardStates(deck.slug)
+              refresh()
+            }}
+          />
+        )}
+      </div>
+      {deck.warnings.length > 0 && (
+        <details className="deck-warnings">
+          <summary>
+            {deck.warnings.length} card{deck.warnings.length === 1 ? '' : 's'} skipped
+          </summary>
+          <ul>
+            {deck.warnings.map((warning) => (
+              <li key={warning}>{warning}</li>
+            ))}
+          </ul>
+        </details>
       )}
     </li>
   )

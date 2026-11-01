@@ -399,3 +399,269 @@ button:focus-visible {
   font-size: 0.75rem;
   color: var(--ink-soft);
 }
+
+/* ---- Flash cards: deck picker ---- */
+
+.deck-picker h3.group-subhead {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  margin: 1rem 0 0.5rem;
+}
+
+.deck-warnings {
+  padding: 0.3rem 0.2rem 0;
+  font-size: 0.75rem;
+  color: var(--incorrect);
+}
+
+.deck-warnings summary {
+  cursor: pointer;
+}
+
+.deck-warnings ul {
+  padding-left: 1.25rem;
+  list-style: disc;
+  color: var(--ink-soft);
+}
+
+/* ---- Flash cards: study view ---- */
+
+.card-counts {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+
+.count-new {
+  color: var(--accent);
+}
+
+.count-learning {
+  color: var(--incorrect);
+}
+
+.count-review {
+  color: var(--correct);
+}
+
+.flashcard {
+  margin-top: 1.25rem;
+  padding: 1.5rem 1.5rem 1.75rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper-raised);
+  min-height: 10rem;
+}
+
+.flashcard:focus,
+.grade-buttons:focus {
+  outline: none;
+}
+
+.card-front {
+  font-size: 1.2rem;
+}
+
+.card-front > p:first-child {
+  margin-top: 0;
+}
+
+.card-divider {
+  border: none;
+  border-top: 1px dashed var(--line);
+  margin: 1.25rem 0;
+}
+
+.card-back {
+  animation: card-reveal 0.18s ease-out;
+}
+
+@keyframes card-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-back {
+    animation: none;
+  }
+}
+
+/* Keeps grading in reach (and in the thumb zone on phones) while a long answer scrolls. */
+.card-actions {
+  position: sticky;
+  bottom: 0;
+  padding: 1rem 0 0.75rem;
+  background: var(--paper);
+}
+
+.reveal-button {
+  width: 100%;
+  padding: 0.85rem 1rem;
+}
+
+.grade-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.grade-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.6rem 0.25rem;
+  min-height: 3.25rem;
+}
+
+.grade-interval {
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.grade-again {
+  border-color: var(--incorrect);
+}
+
+.grade-again:hover {
+  border-color: var(--incorrect);
+  background: var(--incorrect-soft);
+}
+
+.grade-good {
+  border-color: var(--correct);
+}
+
+.grade-good:hover {
+  border-color: var(--correct);
+  background: var(--correct-soft);
+}
+
+.card-hints {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+}
+
+kbd {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 0.05rem 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+}
+
+@media (max-width: 480px) {
+  .card-hints > span {
+    display: none;
+  }
+
+  /* Pin reveal/grade buttons to the bottom of the screen (thumb zone), in the same spot for every card. */
+  .card-study {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100dvh - 6.5rem);
+  }
+
+  .card-actions {
+    margin-top: auto;
+  }
+}
+
+/* ---- Rendered markdown (flash card faces) ---- */
+
+.markdown {
+  font-family: var(--font-serif);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.markdown > :first-child {
+  margin-top: 0;
+}
+
+.markdown > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown a {
+  color: var(--accent);
+}
+
+.markdown ul,
+.markdown ol {
+  padding-left: 1.4rem;
+}
+
+.markdown code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+  background: var(--accent-soft);
+}
+
+.markdown pre {
+  font-size: 0.85rem;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  overflow-x: auto;
+}
+
+.markdown pre code {
+  padding: 0;
+  background: none;
+}
+
+.markdown blockquote {
+  margin-left: 0;
+  padding-left: 1rem;
+  border-left: 2px solid var(--accent);
+  color: var(--ink-soft);
+}
+
+.markdown table {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.markdown th,
+.markdown td {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--line);
+  text-align: left;
+  /* The table scrolls instead, so don't break words like "HNSW" mid-word. */
+  overflow-wrap: normal;
+}
+
+/* ---- Flash cards: summary ---- */
+
+.card-summary .summary-line {
+  margin: -0.75rem 0 1rem;
+}
+
+.summary-next {
+  padding-left: 1.25rem;
+  margin: 0 0 1.5rem;
+  color: var(--ink-soft);
+}
+
+.card-summary .summary-actions {
+  flex-wrap: wrap;
+  align-items: center;
+}

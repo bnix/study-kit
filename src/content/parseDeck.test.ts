@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { parseDeck } from './parseDeck'
+import { parseDeckMeta } from './frontmatter'
+import { parseDeck as parseDeckFile } from './parseDeck'
+
+const parseDeck = (raw: string, slug: string) => parseDeckFile(parseDeckMeta(raw), slug)
 
 describe('parseDeck', () => {
   it('parses deck frontmatter', () => {

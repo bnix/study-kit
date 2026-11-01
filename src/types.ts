@@ -1,3 +1,5 @@
+import type { RootContent } from 'mdast'
+
 export interface Option {
   id: string
   text: string
@@ -57,4 +59,25 @@ export interface MissedQuestionRecord {
   answers: MissedAnswer[]
   /** Rebuilt from per-deck history: answers given and exact miss dates weren't recorded. */
   backfilled?: boolean
+}
+
+export interface Flashcard {
+  id: string
+  /** Plain text of the front, used for the card's ID and in summaries. */
+  frontText: string
+  /** The heading as a paragraph, plus any extra front content above a `?` line. */
+  front: RootContent[]
+  back: RootContent[]
+}
+
+export interface CardDeck {
+  slug: string
+  title: string
+  cert?: string
+  tags: string[]
+  /** Most new cards a review session introduces per day. */
+  newPerDay: number
+  cards: Flashcard[]
+  /** Cards skipped while parsing (no answer, duplicate front), surfaced in the deck picker. */
+  warnings: string[]
 }
