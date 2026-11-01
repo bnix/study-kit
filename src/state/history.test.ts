@@ -2,6 +2,13 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { clearHistory, getDeckStats, getHistory, recordAttempt, resetQuizProgress } from './history'
 import { loadSession, saveSession } from './session'
 
+import type { Deck } from '../types'
+
+function deckWith(...questionIds: string[]): Deck {
+  const questions = questionIds.map((id) => ({ id, prompt: id, options: [], multiSelect: false, references: [] }))
+  return { slug: 'deck-a', title: 'Deck A', tags: [], questions }
+}
+
 describe('history', () => {
   beforeEach(() => {
     localStorage.clear()
@@ -67,10 +74,10 @@ describe('history', () => {
     recordAttempt('deck-a', 'q2', false)
     recordAttempt('deck-a', 'q2', true)
 
-    expect(getDeckStats('deck-a', ['q1', 'q2', 'q3'])).toEqual({ total: 3, attempted: 2, mastered: 2, missed: 0 })
+    expect(getDeckStats(deckWith('q1', 'q2', 'q3'))).toEqual({ total: 3, attempted: 2, mastered: 2, missed: 0 })
   })
 
   it('reports zeroed stats for a deck with no attempts', () => {
-    expect(getDeckStats('deck-a', ['q1', 'q2'])).toEqual({ total: 2, attempted: 0, mastered: 0, missed: 0 })
+    expect(getDeckStats(deckWith('q1', 'q2'))).toEqual({ total: 2, attempted: 0, mastered: 0, missed: 0 })
   })
 })

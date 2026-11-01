@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { CardDeck, Deck } from '../types'
 import { getMissLog } from '../state/missLog'
 import type { StudyMode } from '../state/useCardSession'
@@ -30,6 +31,8 @@ interface DeckPickerProps {
 }
 
 export function DeckPicker({ decks, cardDecks, onStudyQuiz, onStudyCards, onViewMissedLog }: DeckPickerProps) {
+  const [missedLogCount] = useState(() => getMissLog().length)
+
   if (decks.length === 0 && cardDecks.length === 0) {
     return (
       <div className="deck-picker">
@@ -40,8 +43,6 @@ export function DeckPicker({ decks, cardDecks, onStudyQuiz, onStudyCards, onView
       </div>
     )
   }
-
-  const missedLogCount = getMissLog().length
 
   return (
     <div className="deck-picker">

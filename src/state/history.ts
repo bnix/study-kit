@@ -34,19 +34,19 @@ export interface DeckStats {
   missed: number
 }
 
-export function getDeckStats(deckSlug: string, questionIds: string[]): DeckStats {
-  const history = getHistory(deckSlug)
+export function getDeckStats(deck: Deck): DeckStats {
+  const history = getHistory(deck.slug)
   let attempted = 0
   let mastered = 0
 
-  for (const id of questionIds) {
+  for (const { id } of deck.questions) {
     const record = history[id]
     if (!record) continue
     attempted += 1
     if (record.lastResult) mastered += 1
   }
 
-  return { total: questionIds.length, attempted, mastered, missed: attempted - mastered }
+  return { total: deck.questions.length, attempted, mastered, missed: attempted - mastered }
 }
 
 /** Questions whose most recent attempt was wrong, in deck order. */

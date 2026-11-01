@@ -1,15 +1,9 @@
-import { useReducer } from 'react'
 import type { CardDeck, Deck } from '../types'
-import { clearCardStates, getCardDeckStats, getCardStates } from '../state/cardSchedule'
-import { getDeckStats, resetQuizProgress } from '../state/history'
-import { loadSession } from '../state/session'
 import type { StudyMode } from '../state/useCardSession'
+import { useCardDeckProgress, useQuizDeckProgress } from '../state/useDeckProgress'
 import type { QuizMode } from '../state/useQuizSession'
 import { formatInterval } from './formatInterval'
 import { Meter } from './Meter'
-
-// Rows read their stats straight from storage at render; a reset bumps this to re-read.
-const useRefresh = () => useReducer((n: number) => n + 1, 0)[1]
 
 interface ResetButtonProps {
   confirmText: string
@@ -33,12 +27,7 @@ interface QuizDeckRowProps {
 }
 
 export function QuizDeckRow({ deck, onStudy }: QuizDeckRowProps) {
-  const refresh = useRefresh()
-  const stats = getDeckStats(
-    deck.slug,
-    deck.questions.map((q) => q.id),
-  )
-  const inProgress = loadSession(deck.slug) !== null
+  const { stats, inProgress, reset } = useQuizDeckProgress(deck)
   const hasStats = stats.attempted > 0
 
   return (
@@ -66,10 +55,7 @@ export function QuizDeckRow({ deck, onStudy }: QuizDeckRowProps) {
           {hasStats && (
             <ResetButton
               confirmText={`Reset all saved progress for "${deck.title}"?`}
-              onConfirm={() => {
-                resetQuizProgress(deck.slug)
-                refresh()
-              }}
+              onConfirm={reset}
             />
           )}
         </div>
@@ -84,9 +70,7 @@ interface CardDeckRowProps {
 }
 
 export function CardDeckRow({ deck, onStudy }: CardDeckRowProps) {
-  const refresh = useRefresh()
-  const now = new Date()
-  const stats = getCardDeckStats(deck, getCardStates(deck.slug), now)
+  const { now, stats, reset } = useCardDeckProgress(deck)
 
   return (
     <li className="deck-row">
@@ -116,10 +100,7 @@ export function CardDeckRow({ deck, onStudy }: CardDeckRowProps) {
         {stats.studied > 0 && (
           <ResetButton
             confirmText={`Reset the review schedule for "${deck.title}"?`}
-            onConfirm={() => {
-              clearCardStates(deck.slug)
-              refresh()
-            }}
+            onConfirm={reset}
           />
         )}
       </div>
