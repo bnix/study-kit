@@ -34,3 +34,27 @@ export interface AttemptRecord {
 }
 
 export type DeckHistory = Record<string, AttemptRecord>
+
+export interface MissedAnswer {
+  at: string
+  /** Text of the options selected on that attempt. */
+  selected: string[]
+}
+
+export interface MissedQuestionRecord {
+  deckSlug: string
+  deckTitle: string
+  cert?: string
+  questionId: string
+  prompt: string
+  multiSelect: boolean
+  options: Option[]
+  explanation?: string
+  references: Reference[]
+  missCount: number
+  firstMissedAt: string
+  lastMissedAt: string
+  answers: MissedAnswer[]
+  /** Rebuilt from per-deck history: answers given and exact miss dates weren't recorded. */
+  backfilled?: boolean
+}

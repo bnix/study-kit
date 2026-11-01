@@ -25,7 +25,7 @@ function ResetButton({ confirmText, onConfirm }: ResetButtonProps) {
 
 interface QuizDeckRowProps {
   deck: Deck
-  onSelect: (deck: Deck) => void
+  onSelect: (deck: Deck, practiceMissed?: boolean) => void
 }
 
 export function QuizDeckRow({ deck, onSelect }: QuizDeckRowProps) {
@@ -54,6 +54,11 @@ export function QuizDeckRow({ deck, onSelect }: QuizDeckRowProps) {
             </>
           )}
           {inProgress && <span className="deck-status">in progress</span>}
+          {stats.missed > 0 && (
+            <button className="link-button practice-missed" onClick={() => onSelect(deck, true)}>
+              Practice {stats.missed} missed
+            </button>
+          )}
           {hasStats && (
             <ResetButton
               confirmText={`Reset all saved progress for "${deck.title}"?`}

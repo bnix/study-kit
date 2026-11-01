@@ -1,4 +1,4 @@
-import type { AttemptRecord, DeckHistory } from '../types'
+import type { AttemptRecord, Deck, DeckHistory, Question } from '../types'
 import { readJson, removeKey, writeJson } from './storage'
 
 function storageKey(deckSlug: string): string {
@@ -33,6 +33,7 @@ export interface DeckStats {
   total: number
   attempted: number
   mastered: number
+  missed: number
 }
 
 export function getDeckStats(deckSlug: string, questionIds: string[]): DeckStats {
@@ -47,6 +48,11 @@ export function getDeckStats(deckSlug: string, questionIds: string[]): DeckStats
     if (record.lastResult) mastered += 1
   }
 
-  return { total: questionIds.length, attempted, mastered }
+  return { total: questionIds.length, attempted, mastered, missed: attempted - mastered }
 }
 
+/** Questions whose most recent attempt was wrong, in deck order. */
+export function getMissedQuestions(deck: Deck): Question[] {
+  const history = getHistory(deck.slug)
+  return deck.questions.filter((q) => history[q.id] && !history[q.id].lastResult)
+}

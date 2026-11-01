@@ -28,3 +28,12 @@ export function removeKey(key: string): void {
     // Storage unavailable — nothing to remove.
   }
 }
+
+/** Whether `key` holds any value, regardless of format. False when storage is unavailable. */
+export function hasKey(key: string): boolean {
+  try {
+    return localStorage.getItem(key) !== null
+  } catch {
+    return false
+  }
+}

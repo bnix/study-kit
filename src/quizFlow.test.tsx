@@ -1,6 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { getHistory } from './state/history'
+import { getHistory, getMissedQuestions, recordAttempt } from './state/history'
+import { getMissLog } from './state/missLog'
+import { loadSession } from './state/session'
 import { useQuizSession } from './state/useQuizSession'
 import { QuizView } from './components/QuizView'
 import { SessionSummary } from './components/SessionSummary'
@@ -78,6 +80,11 @@ describe('quiz session flow', () => {
     expect(history.q1).toMatchObject({ attempts: 1, correct: 1 })
     expect(history.q2).toMatchObject({ attempts: 1, correct: 0 })
 
+    // The miss is also logged permanently, with the answer that was given.
+    const missLog = getMissLog()
+    expect(missLog.map((r) => r.questionId)).toEqual(['q2'])
+    expect(missLog[0].answers[0].selected).toEqual(['2'])
+
     // Session cleared once the deck is complete, so a fresh mount starts over.
     unmount()
     render(<Harness onRestart={() => {}} />)
@@ -111,5 +118,44 @@ describe('quiz session flow', () => {
     render(<Harness onRestart={() => {}} />)
     expect(screen.getByTestId('quiz-counter')).toHaveAttribute('data-question', '2')
     expect(screen.queryByText(/correct!/i)).not.toBeInTheDocument()
+  })
+
+  it('practices only missed questions without touching the saved full-deck session', () => {
+    recordAttempt('test-deck', 'q1', true)
+    recordAttempt('test-deck', 'q2', false)
+    const missed = getMissedQuestions(deck)
+    expect(missed.map((q) => q.id)).toEqual(['q2'])
+
+    // Leave a full-deck session in progress on Q2.
+    const { unmount } = render(<Harness onRestart={() => {}} />)
+    fireEvent.click(screen.getByLabelText(/4$/))
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }))
+    fireEvent.click(screen.getByRole('button', { name: /next question/i }))
+    unmount()
+
+    function MissedHarness() {
+      const session = useQuizSession({ ...deck, questions: missed }, { persist: false })
+      return session.isComplete ? (
+        <SessionSummary session={session} missedOnly onRestart={() => {}} onExit={() => {}} />
+      ) : (
+        <QuizView session={session} onExit={() => {}} />
+      )
+    }
+
+    render(<MissedHarness />)
+    expect(screen.getByTestId('quiz-counter')).toHaveAttribute('data-total', '1')
+    fireEvent.click(screen.getByLabelText(/2$/))
+    fireEvent.click(screen.getByLabelText(/4$/))
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }))
+    fireEvent.click(screen.getByRole('button', { name: /see results/i }))
+
+    // All missed questions now answered correctly: nothing left to practice again.
+    expect(screen.getByText(/score: 1 \/ 1/i)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /practice missed again/i })).not.toBeInTheDocument()
+    expect(getMissedQuestions(deck)).toEqual([])
+
+    // History records against the real deck, and the full-deck session is untouched.
+    expect(getHistory('test-deck').q2).toMatchObject({ attempts: 2, correct: 1, lastResult: true })
+    expect(loadSession('test-deck')).toMatchObject({ questionIndex: 1 })
   })
 })

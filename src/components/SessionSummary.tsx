@@ -4,11 +4,12 @@ import { QuestionReview } from './QuestionReview'
 
 interface SessionSummaryProps {
   session: ReturnType<typeof useQuizSession>
+  missedOnly?: boolean
   onRestart: () => void
   onExit: () => void
 }
 
-export function SessionSummary({ session, onRestart, onExit }: SessionSummaryProps) {
+export function SessionSummary({ session, missedOnly = false, onRestart, onExit }: SessionSummaryProps) {
   const { score, totalQuestions, results } = session
   const missed = results.filter((r) => !r.correct)
 
@@ -33,7 +34,11 @@ export function SessionSummary({ session, onRestart, onExit }: SessionSummaryPro
       )}
 
       <div className="summary-actions">
-        <button onClick={onRestart}>Retake this deck</button>
+        {missedOnly ? (
+          missed.length > 0 && <button onClick={onRestart}>Practice missed again</button>
+        ) : (
+          <button onClick={onRestart}>Retake this deck</button>
+        )}
         <button className="link-button" onClick={onExit}>
           Back to decks
         </button>

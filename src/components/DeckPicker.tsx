@@ -1,4 +1,5 @@
 import type { Deck } from '../types'
+import { getMissLog } from '../state/missLog'
 import { QuizDeckRow } from './DeckRows'
 
 interface CertGroup {
@@ -18,10 +19,11 @@ function groupByCert(quizzes: Deck[]): CertGroup[] {
 
 interface DeckPickerProps {
   decks: Deck[]
-  onSelect: (deck: Deck) => void
+  onSelect: (deck: Deck, practiceMissed?: boolean) => void
+  onViewMissedLog: () => void
 }
 
-export function DeckPicker({ decks, onSelect }: DeckPickerProps) {
+export function DeckPicker({ decks, onSelect, onViewMissedLog }: DeckPickerProps) {
   if (decks.length === 0) {
     return (
       <div className="deck-picker">
@@ -33,9 +35,18 @@ export function DeckPicker({ decks, onSelect }: DeckPickerProps) {
     )
   }
 
+  const missedLogCount = getMissLog().length
+
   return (
     <div className="deck-picker">
       <h1>Quiz Me</h1>
+      {missedLogCount > 0 && (
+        <p className="missed-log-link">
+          <button className="link-button" onClick={onViewMissedLog}>
+            View all {missedLogCount} missed questions
+          </button>
+        </p>
+      )}
       {groupByCert(decks).map(({ cert, quizzes }) => (
         <section key={cert}>
           <h2>{cert}</h2>

@@ -55,10 +55,10 @@ describe('history', () => {
     recordAttempt('deck-a', 'q2', false)
     recordAttempt('deck-a', 'q2', true)
 
-    expect(getDeckStats('deck-a', ['q1', 'q2', 'q3'])).toEqual({ total: 3, attempted: 2, mastered: 2 })
+    expect(getDeckStats('deck-a', ['q1', 'q2', 'q3'])).toEqual({ total: 3, attempted: 2, mastered: 2, missed: 0 })
   })
 
   it('reports zeroed stats for a deck with no attempts', () => {
-    expect(getDeckStats('deck-a', ['q1', 'q2'])).toEqual({ total: 2, attempted: 0, mastered: 0 })
+    expect(getDeckStats('deck-a', ['q1', 'q2'])).toEqual({ total: 2, attempted: 0, mastered: 0, missed: 0 })
   })
 })

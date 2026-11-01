@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useReducer } from 'react'
 import type { Deck, Question } from '../types'
 import { recordAttempt } from './history'
+import { recordMiss } from './missLog'
 import { clearSession, loadSession, saveSession, type PersistedResult } from './session'
 
 interface QuestionResult {
@@ -85,18 +86,24 @@ function restoreState(deck: Deck): SessionState {
   }
 }
 
-export function useQuizSession(deck: Deck) {
-  const [state, dispatch] = useReducer(reducer, deck, restoreState)
+interface SessionOptions {
+  /** Save/resume progress in localStorage. Off for ad-hoc subsets (e.g. missed-only practice). */
+  persist?: boolean
+}
+
+export function useQuizSession(deck: Deck, { persist = true }: SessionOptions = {}) {
+  const [state, dispatch] = useReducer(reducer, deck, (d) => (persist ? restoreState(d) : emptyState))
 
   const isComplete = state.questionIndex >= deck.questions.length
 
   useEffect(() => {
+    if (!persist) return
     if (isComplete) {
       clearSession(deck.slug)
     } else {
       saveSession(deck.slug, state)
     }
-  }, [deck.slug, isComplete, state])
+  }, [deck.slug, isComplete, persist, state])
 
   const currentQuestion = deck.questions[state.questionIndex]
 
@@ -117,6 +124,7 @@ export function useQuizSession(deck: Deck) {
   function submit() {
     if (!currentQuestion || state.selected.length === 0) return
     recordAttempt(deck.slug, currentQuestion.id, isCorrect)
+    if (!isCorrect) recordMiss(deck, currentQuestion, state.selected)
     dispatch({ type: 'submit', questionId: currentQuestion.id, correct: isCorrect })
   }
 
